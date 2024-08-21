@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gorai.myedenfocus.domain.model.Session
 import com.gorai.myedenfocus.domain.model.Subject
 import com.gorai.myedenfocus.domain.model.Task
@@ -63,9 +64,14 @@ fun DashBoardScreenRoute(
     navigator: DestinationsNavigator
 ) {
     val viewModel: DashboardViewModel = hiltViewModel()
-    val state by viewModel.state.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val tasks by viewModel.recentSessions.collectAsStateWithLifecycle()
+    val recentSessions by viewModel.recentSessions.collectAsStateWithLifecycle()
+
     DashboardScreen(
         state = state,
+        tasks = tasks,
+        recentSessions = recentSessions,
         onEvent = viewModel::onEvent,
         onSubjectCardClick = {
             subjectId -> subjectId?.let {
@@ -87,6 +93,8 @@ fun DashBoardScreenRoute(
 @Composable
 private fun DashboardScreen(
     state: DashboardState,
+    tasks: List<Task>,
+    recentSessions: List<Session>,
     onEvent: (DashboardEvent) -> Unit,
     onSubjectCardClick: (Int?) -> Unit,
     onTaskCardClick: (Int?) -> Unit,
@@ -263,7 +271,7 @@ private fun DashboardScreen(
             studySessionsList(
                 sectionTitle = "Recent Study Sessions",
                 emptyListText = "No study sessions\n" + "Start a study session to begin recording your progress",
-                sessions = sessions,
+                sessions = recentSessions,
                 onDeleteIconClick = { isDeleteSubjectDialogOpen = true
                     onEvent(DashboardEvent.OnDeleteSessionButtonClick(it))
                 }

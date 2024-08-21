@@ -4,13 +4,17 @@ import androidx.compose.ui.graphics.Path.Companion.combine
 import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gorai.myedenfocus.domain.model.Session
 import com.gorai.myedenfocus.domain.model.Subject
+import com.gorai.myedenfocus.domain.model.Task
 import com.gorai.myedenfocus.domain.repository.SessionRepository
 import com.gorai.myedenfocus.domain.repository.SubjectRepository
+import com.gorai.myedenfocus.domain.repository.TaskRepository
 import com.gorai.myedenfocus.util.toHours
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -20,7 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
     private val subjectRepository: SubjectRepository,
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
+    private val taskRepository: TaskRepository
 ): ViewModel() {
     private val _state = MutableStateFlow(DashboardState())
     val state = combine(
@@ -40,6 +45,13 @@ class DashboardViewModel @Inject constructor(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = DashboardState()
     )
+
+    val recentSessions: StateFlow<List<Session>> = sessionRepository.getRecentFiveSessions()
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
     fun onEvent(event: DashboardEvent) {
         when(event) {
             DashboardEvent.DeleteSubject -> TODO()
