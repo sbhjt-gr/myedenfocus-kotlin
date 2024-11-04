@@ -58,11 +58,11 @@ Provide examples and instructions for using the project. For example:
 
 ## Contributing
 
-Contributions are not needed for now.
+Contributions are not needed.
 
 ## License
 
-Distributed under the MIT License. See `LICENSE` for more information.
+Distributed under the Proprietary License. See `LICENSE` for more information.
 
 ## Contact
 
